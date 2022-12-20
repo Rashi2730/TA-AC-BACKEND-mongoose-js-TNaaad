@@ -10,6 +10,8 @@ mongoose.connect('mongodb://127.0.0.1:27017/sampless', (err) => {
 var app = express();
 app.use(express.json());
 
+///Create User databse
+
 app.post('/users', (req, res) => {
   // console.log(req.body);
   User.create(req.body, (err, user) => {
@@ -18,29 +20,47 @@ app.post('/users', (req, res) => {
   });
 });
 
-app.get('/users', (req, res) => {
-  User.find({ _id: '63a0d56b366062c14f28929c' }, (err, user) => {
-    console.log(err);
-    res.json(user);
-  });
-});
-app.get('/usersFindOne', (req, res) => {
-  User.findOne({ _id: '63a0d58b366062c14f28929e' }, (err, user) => {
+//find User
+
+app.get('//:id', (req, res) => {
+  var id = req.params.id;
+  // User.find((err, user) => {
+  //   console.log(err);
+  //   res.json(user);
+  // });
+  // User.findOne(id, (err, user) => {
+  //   console.log(err);
+  //   res.json(user);
+  // });
+  User.findById(id, (err, user) => {
     console.log(err);
     res.json(user);
   });
 });
 
-app.get('/users/:id', (req, res) => {
-  User.findById(req.params.id, (err, user) => {
-    console.log(err);
-    res.json(user);
+//UpdateUser
+
+app.put('/users/:id', (req, res) => {
+  var id = req.params.id;
+  User.findByIdAndUpdate(id, req.body, { new: true }, (err, updatedUser) => {
+    res.json(updatedUser);
   });
 });
 
-app.get('/users/:id',(req,res) => {
-  User.update()
+//deleteUser
+
+app.delete('/users/:id', (req, res) => {
+  User.findByIdAndDelete(req.params.id, (err, deletedUser) => {
+    res.send(`${deletedUser.name} user deleted`);
+  });
 });
+
+//error handlers
+
+app.use((req, res, next) => {
+  res.send('Page not found');
+});
+
 
 app.listen(3000, () => {
   console.log('Server listening to port 3k');
